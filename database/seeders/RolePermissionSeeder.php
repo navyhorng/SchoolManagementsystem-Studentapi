@@ -2,10 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+
+//php artisan db:seed --class=RolePermissionSeeder
 
 class RolePermissionSeeder extends Seeder
 {
@@ -34,13 +37,16 @@ class RolePermissionSeeder extends Seeder
             'download reports',
         ];
         // Create permissions
-        foreach (array_merge($adminPermissions, $studentPermissions) as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+        foreach ($adminPermissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
+        }
+        foreach ($studentPermissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'api']);
         }
 
         // Create roles
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $studentRole = Role::firstOrCreate(['name' => 'student']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $studentRole = Role::firstOrCreate(['name' => 'student', 'guard_name' => 'api']);
 
         // Assign permissions
         $adminRole->syncPermissions($adminPermissions);

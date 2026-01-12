@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DefaultAdminSeeder extends Seeder
 {
@@ -13,16 +14,16 @@ class DefaultAdminSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => bcrypt('admin123'),
-        ]);
-
-        User::create([
-            'name' => 'Student',
-            'email' => 'std@gmail.com',
-            'password' => bcrypt('admin123'),
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'System Admin',
+                'password' => Hash::make('admin123'),
+            ]
+        );
+        // Assign admin role (web guard)
+        if (! $admin->hasRole('admin')) {
+            $admin->assignRole('admin');
+        }
     }
 }
