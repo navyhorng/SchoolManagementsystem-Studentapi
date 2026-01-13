@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('gender');
+            $table->string('gender')->nullable();
             $table->string('phone_number')->nullable();
             $table->date('dob')->nullable();
             $table->text('address')->nullable();

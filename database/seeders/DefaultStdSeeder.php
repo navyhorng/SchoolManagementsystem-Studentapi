@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -11,7 +12,6 @@ class DefaultStdSeeder extends Seeder
 {
     public function run(): void
     {
-        // ✅ Ensure role exists
         $studentRole = Role::where('name', 'student')
             ->where('guard_name', 'api')
             ->firstOrFail();
@@ -23,7 +23,7 @@ class DefaultStdSeeder extends Seeder
         ];
 
         foreach ($students as $data) {
-            $student = User::firstOrCreate(
+             $user = User::firstOrCreate(
                 ['email' => $data['email']],
                 [
                     'name' => $data['name'],
@@ -31,10 +31,20 @@ class DefaultStdSeeder extends Seeder
                 ]
             );
 
-            // ✅ Prevent duplicate role assignment
-            if (! $student->hasRole($studentRole)) {
-                $student->assignRole($studentRole);
+            // 2️⃣ Assign STUDENT role to USER
+            if (! $user->hasRole('student')) {
+                $user->assignRole($studentRole);
             }
+            Student::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'student_code' => 'STD-' . str_pad($user->id, 5, '0', STR_PAD_LEFT),
+                    'gender'=> 'female',
+                    'phone_number' => null,
+                    'dob' => null,
+                    'address' => null,
+                ]
+            );
         }
     }
 }
