@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Student\AttendanceController;
 use App\Http\Controllers\Api\Student\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -14,9 +15,14 @@ Route::post('/student/login', [AuthController::class, 'login']);
 Route::middleware(['auth:sanctum', 'role:student,api'])
     ->prefix('student')
     ->group(function () {
-        Route::get('/profile', [ProfileController::class, 'show']);
-        Route::put('/profile', [ProfileController::class,'update']);
 
+    //Prifile
+        Route::get('/profile/show', [ProfileController::class, 'show']);
+        Route::put('/profile/update', [ProfileController::class,'update']);
+
+    //Attendance
+        Route::get('/attendance/summary', [AttendanceController::class, 'summary']);
+        Route::get('/attendance/report/pdf', [AttendanceController::class, 'downloadPdf']);
 
         Route::post('/logout', [AuthController::class, 'logout']);
 
