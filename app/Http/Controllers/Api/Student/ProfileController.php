@@ -30,8 +30,8 @@ class ProfileController extends Controller
                     'email'=> $user->email
                 ],
                 'student' => [
+                    'student_code' => $student->student_code,
                     'gender' => $student->gender,
-                    'student_code' => $student->id,
                     'phone' => $student->phone,
                     'address' => $student->address,
                     'date of birth' => $student->dob
