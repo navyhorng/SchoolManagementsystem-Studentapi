@@ -32,7 +32,7 @@ class ProfileController extends Controller
                 'student' => [
                     'student_code' => $student->student_code,
                     'gender' => $student->gender,
-                    'phone' => $student->phone,
+                    'phone' => $student->phone_number,
                     'address' => $student->address,
                     'date of birth' => $student->dob
                 ]
@@ -43,7 +43,7 @@ class ProfileController extends Controller
     public function update(Request $request){
         $request->validate([
             'gender',
-            'phone',
+            'phone_number',
             'address',
             'dob'
         ]);
@@ -62,7 +62,20 @@ class ProfileController extends Controller
         return response()->json([
             'status'=> true,
             'message' => 'Profile update successfully',
-            'data' => $student->toArray()
+            'data' => [
+                'user'=> [
+                    'user_id' => $user->id
+                ],
+                'student' => [
+                    'name' => $user->name,
+                    'email'=> $user->email,
+                    'student_code' => $student->student_code,
+                    'gender' => $student->gender,
+                    'phone_number' => $student->phone_number,
+                    'address' => $student->address,
+                ]
+            ]
         ]);
+
     }
 }
