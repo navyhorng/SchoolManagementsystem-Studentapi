@@ -21,8 +21,9 @@ Route::middleware(['auth:sanctum', 'role:student,api'])
         Route::put('/profile/update', [ProfileController::class,'update']);
 
     //Attendance
+        Route::get('/attendance', [AttendanceController::class, 'index']);
         Route::get('/attendance/summary', [AttendanceController::class, 'summary']);
-        Route::get('/attendance/report/pdf', [AttendanceController::class, 'downloadPdf']);
+        // Route::get('/attendance/report/pdf', [AttendanceController::class, 'downloadPdf']);
 
         Route::post('/logout', [AuthController::class, 'logout']);
 
