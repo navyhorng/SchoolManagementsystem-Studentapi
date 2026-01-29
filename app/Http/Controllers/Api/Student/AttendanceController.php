@@ -14,6 +14,9 @@ class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
+        if(!Auth::user()->hasRole('student')){
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
         $student = Auth::user()?->student;
 
         if (!$student) {
