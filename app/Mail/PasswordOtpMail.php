@@ -1,6 +1,5 @@
 <?php
 
-// app/Mail/PasswordOtpMail.php
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
@@ -11,16 +10,12 @@ class PasswordOtpMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $otp;
+    public function __construct(public string $otp) {}
 
-    public function __construct($otp) {
-        $this->otp = $otp;
-    }
-
-    public function build() {
+    public function build()
+    {
         return $this->subject('Your Password Reset OTP')
-                    ->view('emails.password_otp')
-                    ->with(['otp' => $this->otp]);
+            ->view('emails.password_otp')
+            ->with(['otp' => $this->otp]);
     }
 }
-
