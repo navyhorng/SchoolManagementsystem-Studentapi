@@ -10,13 +10,13 @@ RUN apt-get update && apt-get install -y \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
+# Copy everything first so artisan exists
 COPY . .
+
+# Install deps
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 COPY nginx.conf /etc/nginx/sites-available/default
 
