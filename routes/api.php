@@ -33,7 +33,8 @@ Route::middleware(['auth:sanctum', 'role:student,api'])
         Route::get('/attendance', [AttendanceController::class, 'index']);
         Route::get('/attendance/summary', [AttendanceController::class, 'summary']);
         // Route::get('/attendance/report/pdf', [AttendanceController::class, 'downloadPdf']);
-
+        
+    //Fee
         Route::get('fee-payments', [FeePaymentController::class, 'index']);
         Route::get('fee-payments/{id}', [FeePaymentController::class, 'show']);
 

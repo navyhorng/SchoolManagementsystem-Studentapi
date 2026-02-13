@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
+
 
 class Student extends Model
 {
+    use CrudTrait;
     protected $fillable = [
         'student_code',
         'user_id',
@@ -22,5 +25,9 @@ class Student extends Model
 
     public function attendances(){
         return $this->hasMany(Attendance::class);
+    }
+
+    public function classroom(){
+        return $this->belongsTo(Classroom::class);
     }
 }
