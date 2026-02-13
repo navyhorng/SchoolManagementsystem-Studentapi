@@ -15,4 +15,12 @@ class Classroom extends Model
     {
         return $this->hasMany(Classroom::class);
     }
+
+    public function teachers()
+{
+    return $this->belongsToMany(Teacher::class, 'classroom_teachers')
+        ->withPivot('is_active')
+        ->withTimestamps();
+}
+
 }
