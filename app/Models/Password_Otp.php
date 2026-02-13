@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 
 class Password_Otp extends Model
 {
+    protected $table = 'password_otps';
     protected $fillable = [
         'email',
         'otp',

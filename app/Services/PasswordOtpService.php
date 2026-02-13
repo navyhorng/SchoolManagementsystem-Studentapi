@@ -16,7 +16,7 @@ class PasswordOtpService
         $user = User::where('email',$email)->first();
         if (!$user) return false;
 
-        $otpCode = rand(100000, 999999); // 6-digit OTP
+        $otpCode = rand(100000, 999999);
 
         $passwordOtp = Password_Otp::create([
             'email' => $email,
