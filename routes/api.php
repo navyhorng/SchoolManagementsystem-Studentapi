@@ -39,8 +39,4 @@ Route::middleware(['auth:sanctum', 'role:student,api'])
         Route::get('fee-payments/{id}', [FeePaymentController::class, 'show']);
 
         Route::post('/logout', [AuthController::class, 'logout']);
-
-    // Route::get('/student/dashboard', function (Request $request) {
-    //     return response()->json(['message' => 'Welcome to the student dashboard']);
-    // });
 });
