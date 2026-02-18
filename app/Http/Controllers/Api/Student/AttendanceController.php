@@ -8,107 +8,125 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
-use function Symfony\Component\Clock\now;
+// use function Symfony\Component\Clock\now;
 
 class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
-        if(!Auth::user()->hasRole('student')){
+        $user = Auth::user();
+
+        if (!$user || !$user->hasRole('student')) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
         }
-        $student = Auth::user()?->student;
 
+        $student = $user->student;
         if (!$student) {
             return response()->json(['status' => false, 'message' => 'Student not found'], 404);
         }
 
-        $from = $request->query('from');
-        $to   = $request->query('to');
+        $validated = $request->validate([
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date', 'after_or_equal:from'],
+            'year' => ['nullable', 'integer', 'min:2000', 'max:2100'],
+            'month' => ['nullable', 'integer', 'min:1', 'max:12'],
+            'classroom_id' => ['nullable', 'integer'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
 
-        $year  = $request->query('year');
-        $month = $request->query('month');
+        $from = $validated['from'] ?? null;
+        $to = $validated['to'] ?? null;
 
-        $classroomId = $request->query('classroom_id');
+        $year = $validated['year'] ?? (int) now()->format('Y');
+        $month = array_key_exists('month', $validated) ? $validated['month'] : null;
+
+        $classroomId = $validated['classroom_id'] ?? null;
+        $perPage = $validated['per_page'] ?? 15;
 
         $query = Attendance::query()
             ->where('student_id', $student->id)
             ->select(['id', 'student_id', 'classroom_id', 'date', 'status', 'created_at'])
-            ->orderBy('date', 'desc');
+            ->orderByDesc('date');
 
         if ($classroomId) {
-            $query->where('classroom_id', (int) $classroomId);
+            $query->where('classroom_id', $classroomId);
         }
 
-        // Filter A: from/to (highest priority)
         if ($from && $to) {
             $query->whereBetween('date', [$from, $to]);
         } else {
-            // Filter B: year + optional month
-            $year = (int) ($year ?: now()->format('Y'));
             $query->whereYear('date', $year);
 
             if ($month !== null) {
-                $month = (int) $month;
-                if ($month < 1 || $month > 12) {
-                    return response()->json(['status' => false, 'message' => 'Invalid month (1-12)'], 422);
-                }
                 $query->whereMonth('date', $month);
             }
         }
-
-        $perPage = min((int) $request->query('per_page', 15), 100);
 
         return response()->json([
             'status' => true,
             'filters' => [
                 'from' => $from,
                 'to' => $to,
-                'year' => $year ? (int) $year : null,
-                'month' => $month !== null ? (int) $month : null,
-                'classroom_id' => $classroomId ? (int) $classroomId : null,
+                'year' => $year,
+                'month' => $month,
+                'classroom_id' => $classroomId,
+                'per_page' => $perPage,
             ],
             'data' => $query->paginate($perPage),
         ]);
     }
-    public function summary(Request $request){
-        $student = Auth::user()?->student;
 
-        if(!$student){
-            return response()->json([
-                'status' => false,
-                'message' => 'Student not found',
-            ], 404);
+    public function summary(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->hasRole('student')) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
         }
-        $month = $request->query('month');
-        $year = $request->query('year');
 
-        $cacheKey = "student:{$student->id}:attendance:summary:{$year}-{$month}";
+        $student = $user->student;
+        if (!$student) {
+            return response()->json(['status' => false, 'message' => 'Student not found'], 404);
+        }
 
-        $summary = Cache::remember($cacheKey, 60*60, function() use ($month, $student, $year){
-            $query = Attendance::where('student_id', $student->id)
+        $validated = $request->validate([
+            'year' => ['nullable', 'integer', 'min:2000', 'max:2100'],
+            'month' => ['nullable', 'integer', 'min:1', 'max:12'],
+        ]);
+
+        $year = $validated['year'] ?? (int) now()->format('Y');
+        $month = $validated['month'] ?? null;
+
+        $monthKey = $month ? str_pad((string)$month, 2, '0', STR_PAD_LEFT) : 'all';
+        $cacheKey = "student:{$student->id}:attendance:summary:{$year}-{$monthKey}";
+
+        $summary = Cache::remember($cacheKey, 3600, function () use ($month, $student, $year) {
+            $query = Attendance::query()
+                ->where('student_id', $student->id)
                 ->whereYear('date', $year);
 
-            if($month) {
+            if ($month) {
                 $query->whereMonth('date', $month);
             }
+
             return $query->selectRaw("
                 COUNT(*) as total_days,
-                SUM(status = 'Present') as present,
-                SUM(status = 'Absent') as absent,
-                SUM(status = 'Late') as late
-            ")
-            ->first();
+                SUM(CASE WHEN status = 'Present' THEN 1 ELSE 0 END) as present,
+                SUM(CASE WHEN status = 'Absent' THEN 1 ELSE 0 END) as absent,
+                SUM(CASE WHEN status = 'Late' THEN 1 ELSE 0 END) as late
+            ")->first();
         });
+
         return response()->json([
             'status' => true,
             'period' => [
-                'month' => $month,
                 'year' => $year,
+                'month' => $month, // null means whole year
             ],
-            'summary' => $summary
+            'summary' => $summary,
         ]);
     }
+
 
     public function show($id){
         $student = Auth::user()?->student;

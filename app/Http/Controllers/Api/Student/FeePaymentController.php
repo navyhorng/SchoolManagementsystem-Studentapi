@@ -11,53 +11,70 @@ class FeePaymentController extends Controller
 {
     public function index(Request $request)
     {
-        if(!Auth::user()->hasRole('student')){
+        $user = Auth::user();
+
+        if (!$user || !$user->hasRole('student')) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
         }
-        $student = Auth::user()?->student;
-        if (!$student) {
+        if (!$user->student) {
             return response()->json(['status' => false, 'message' => 'Student not found'], 404);
         }
-        $studentId = Auth::id();
 
-        $status = $request->query('status');
-        $year   = $request->query('year');
-        $from   = $request->query('from');
-        $to     = $request->query('to');
+        $validated = $request->validate([
+            'status' => ['nullable', 'in:Paid,Unpaid,Partial'],
+            'year' => ['nullable', 'integer', 'min:2000', 'max:2100'],
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date', 'after_or_equal:from'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
 
-        $query = FeePayment::where('student_id', $studentId)
+        $studentUserId = $user->id;
+
+        $status = $validated['status'] ?? null;
+        $year   = $validated['year'] ?? null;
+        $from   = $validated['from'] ?? null;
+        $to     = $validated['to'] ?? null;
+        $perPage = $validated['per_page'] ?? 15;
+
+        $query = FeePayment::query()
+            ->where('student_id', $studentUserId)
             ->select(['id', 'student_id', 'amount', 'status', 'due_date', 'payment_date', 'created_at'])
             ->orderByDesc('due_date');
+
         if ($status) {
             $query->where('status', $status);
         }
 
-        // Filter by due_date range
         if ($from && $to) {
             $query->whereBetween('due_date', [$from, $to]);
         } elseif ($year) {
-            $query->whereYear('due_date', (int) $year);
+            $query->whereYear('due_date', $year);
         }
-
-        $perPage = min((int) $request->query('per_page', 15), 100);
 
         return response()->json([
             'status' => true,
             'filters' => [
                 'status' => $status,
-                'year' => $year ? (int)$year : null,
+                'year' => $year,
                 'from' => $from,
                 'to' => $to,
+                'per_page' => $perPage,
             ],
             'data' => $query->paginate($perPage),
         ]);
     }
 
-    public function show($id)
-    {
-        $userId = Auth::id();
 
-        $payment = FeePayment::where('student_id', $userId)
+    public function show(int $id)
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->hasRole('student')) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $payment = FeePayment::query()
+            ->where('student_id', $user->id)
             ->where('id', $id)
             ->first();
 
@@ -73,4 +90,5 @@ class FeePaymentController extends Controller
             'data' => $payment,
         ]);
     }
+
 }
