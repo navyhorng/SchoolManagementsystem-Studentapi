@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Student\AttendanceController;
 use App\Http\Controllers\Api\Student\Auth\PasswordController;
 use App\Http\Controllers\Api\Student\FeePaymentController;
 use App\Http\Controllers\Api\Student\ProfileController;
+use App\Http\Controllers\Api\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,10 +34,17 @@ Route::middleware(['auth:sanctum', 'role:student,api'])
         Route::get('/attendance', [AttendanceController::class, 'index']);
         Route::get('/attendance/summary', [AttendanceController::class, 'summary']);
         // Route::get('/attendance/report/pdf', [AttendanceController::class, 'downloadPdf']);
-        
+
     //Fee
         Route::get('fee-payments', [FeePaymentController::class, 'index']);
         Route::get('fee-payments/{id}', [FeePaymentController::class, 'show']);
 
-        Route::post('/logout', [AuthController::class, 'logout']);
+    //Tasks
+        Route::apiResource('tasks', TaskController::class);
+        Route::patch('tasks/{task}/toggle-complete', [TaskController::class, 'toggleComplete']);
+
+    //logout
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+
 });
