@@ -17,9 +17,9 @@ class DefaultStdSeeder extends Seeder
             ->firstOrFail();
 
         $students = [
-            ['name' => 'Student One', 'email' => 'student1@example.com'],
-            ['name' => 'Student Two', 'email' => 'student2@example.com'],
-            ['name' => 'Student Three', 'email' => 'student3@example.com'],
+            ['name' => 'LyHoung', 'email' => 'lyhoung@student.local'],
+            ['name' => 'Kean Nita', 'email' => 'keannita@student.local'],
+            ['name' => 'Kong Srey Pich Keo', 'email' => 'kongsreypichkeo@student.local'],
         ];
 
         foreach ($students as $data) {
