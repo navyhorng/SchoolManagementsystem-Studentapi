@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\GradeController;
+use App\Http\Controllers\Api\Student\GradeController;
 use App\Http\Controllers\Api\Student\AttendanceController;
 use App\Http\Controllers\Api\Student\Auth\PasswordController;
 use App\Http\Controllers\Api\Student\FeePaymentController;

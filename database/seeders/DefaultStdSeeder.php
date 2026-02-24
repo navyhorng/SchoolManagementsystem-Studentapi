@@ -18,8 +18,9 @@ class DefaultStdSeeder extends Seeder
 
         $students = [
             ['name' => 'LyHoung', 'email' => 'lyhoung@student.local'],
-            ['name' => 'Kean Nita', 'email' => 'keannita@student.local'],
-            ['name' => 'Kong Srey Pich Keo', 'email' => 'kongsreypichkeo@student.local'],
+            ['name' => 'Kung Nita', 'email' => 'kungnita@student.local'],
+            ['name' => ' Srey Pich Keo', 'email' => 'sreypichkeo@student.local'],
+            ['name' => 'Sok Sreymom', 'email' => 'zavyvy92@gmail.com'],
         ];
 
         foreach ($students as $data) {

@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             TaskSeeder::class,
             AttendanceSeeder::class,
             GradeSeeder::class,
+            FeePaymentSeeder::class,
         ]);
 
     }
