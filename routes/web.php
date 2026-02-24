@@ -5,9 +5,11 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/', fn () => response()->json(['ok' => true]));
 
 Route::get('/test-mail', function () {
     Mail::to('nitakong1122@gmail.com')
