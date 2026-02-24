@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\GradeController;
 use App\Http\Controllers\Api\Student\AttendanceController;
 use App\Http\Controllers\Api\Student\Auth\PasswordController;
 use App\Http\Controllers\Api\Student\FeePaymentController;
@@ -38,6 +39,10 @@ Route::middleware(['auth:sanctum', 'role:student,api'])
     //Fee
         Route::get('fee-payments', [FeePaymentController::class, 'index']);
         Route::get('fee-payments/{id}', [FeePaymentController::class, 'show']);
+
+    //Grades
+        Route::get('/grades', [GradeController::class, 'index']);
+        Route::get('/grades/terms', [GradeController::class, 'terms']);
 
     //Tasks
         Route::apiResource('tasks', TaskController::class);

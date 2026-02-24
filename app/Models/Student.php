@@ -30,4 +30,8 @@ class Student extends Model
     public function classroom(){
         return $this->belongsTo(Classroom::class);
     }
+
+    public function grades(){
+        return $this->hasMany(Grade::class);
+    }
 }

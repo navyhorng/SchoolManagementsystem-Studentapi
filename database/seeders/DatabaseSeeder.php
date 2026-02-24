@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Grade;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -27,6 +28,8 @@ class DatabaseSeeder extends Seeder
             ClassroomSeeder::class,
             ClassroomTeacherSeeder::class,
             TaskSeeder::class,
+            AttendanceSeeder::class,
+            GradeSeeder::class,
         ]);
 
     }
