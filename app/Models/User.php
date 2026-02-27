@@ -58,13 +58,13 @@ class User extends Authenticatable
         return $this->hasOne(Student::class);
     }
 
-    public function tasks()
-    {
-        return $this->hasMany(Task::class);
-    }
+    // public function tasks()
+    // {
+    //     return $this->hasMany(Task::class);
+    // }
 
-    public function grades()
-    {
-        return $this->hasMany(Grade::class, 'student_id');
-    }
+    // public function grades()
+    // {
+    //     return $this->hasMany(Grade::class, 'student_id');
+    // }
 }

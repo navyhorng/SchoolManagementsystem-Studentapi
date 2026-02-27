@@ -3,4 +3,4 @@
     <a class="nav-link" href="{{ backpack_url('dashboard') }}"><i class="la la-home nav-icon"></i> {{ trans('backpack::base.dashboard') }}</a>
 </li>
 
-<x-backpack::menu-item title="Students" icon="la la-question" :link="backpack_url('student')" />
+<x-backpack::menu-item title="Students" icon="la la-user" :link="backpack_url('student')" />
