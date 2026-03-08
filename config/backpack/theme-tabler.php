@@ -41,6 +41,7 @@ return [
         base_path('vendor/backpack/theme-tabler/resources/assets/css/skins/backpack-color-palette.css'),
         base_path('vendor/backpack/theme-tabler/resources/assets/css/skins/glass.css'),
         base_path('vendor/backpack/theme-tabler/resources/assets/css/skins/fuzzy-background.css'),
+        base_path('resources/css/backpack-blue-theme.css'),
         // base_path('vendor/backpack/theme-tabler/resources/assets/css/skins/dotted-background.css'),
         // base_path('vendor/backpack/theme-tabler/resources/assets/css/skins/vertical-lines-background.css'),
         // base_path('vendor/backpack/theme-tabler/resources/assets/css/skins/pinstripe-background.css'),
@@ -122,7 +123,7 @@ return [
          * For links to be visible on different background colors use: "navbar-dark", "navbar-light".
          *
          */
-        'topHeader' => null,
+        'topHeader' => 'navbar-dark',
 
         /**
          * Applies only for Vertical Menu Layout
@@ -142,7 +143,7 @@ return [
         /**
          * Used in the top menu content when the layout is of horizontal type.
          */
-        'menuHorizontalContent' => null,
+        'menuHorizontalContent' => 'navbar navbar-expand-lg navbar-dark',
 
         /**
          * Make transparent with footer-transparent.

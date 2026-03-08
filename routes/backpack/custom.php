@@ -21,7 +21,16 @@ Route::group([
     Route::get('dashboard/stats', 'DashboardController@stats')->name('backpack.dashboard.stats');
     Route::get('/', 'DashboardController@redirect')->name('backpack');
 
+    Route::crud('user', 'UserCrudController');
     Route::crud('student', 'StudentCrudController');
+    Route::crud('teacher', 'TeacherCrudController');
+    Route::crud('classroom', 'ClassroomCrudController');
+    Route::crud('classroom-teacher', 'ClassroomTeacherCrudController');
+    Route::crud('attendance', 'AttendanceCrudController');
+    Route::crud('grade', 'GradeCrudController');
+    Route::crud('report', 'ReportCrudController');
+    Route::crud('fee-payment', 'FeePaymentCrudController');
+    Route::crud('task', 'TaskCrudController');
 }); // this should be the absolute last line of this file
 
 /**

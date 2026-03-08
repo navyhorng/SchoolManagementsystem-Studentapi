@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 
 class Classroom extends Model
 {
+    use CrudTrait;
+
     protected $fillable = [
         'name',
         'location',

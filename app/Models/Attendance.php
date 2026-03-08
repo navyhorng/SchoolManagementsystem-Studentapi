@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 
 class Attendance extends Model
 {
+    use CrudTrait;
+
     protected $fillable = [
         'student_id',
         'classroom_id',
