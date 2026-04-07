@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: school_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - app_storage:/var/www/html/storage
+    environment:
+      - APP_ENV=staging
+    env_file:
+      - .env
+    networks:
+      - school_network
+    depends_on:
+      - mysql
+      - redis
+
+  nginx:
+    image: nginx:alpine
+    container_name: school_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/nginx/ssl:/etc/nginx/ssl   # for your SSL certs
+    networks:
+      - school_network
+    depends_on:
+      - app
+
+  mysql:
+    image: mysql:8.0
+    container_name: school_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"   # remove this line in production for security
+    networks:
+      - school_network
+
+  redis:
+    image: redis:alpine
+    container_name: school_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - school_network
+
+volumes:
+  mysql_data:
+  redis_data:
+  app_storage:
+
+networks:
+  school_network:
+    driver: bridge

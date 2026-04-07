@@ -1,30 +1,33 @@
-FROM php:8.4-fpm
+FROM php:8.4-fpm-alpine
 
-RUN apt-get update && apt-get install -y \
-    nginx git unzip curl \
-    libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
-    libonig-dev libxml2-dev libzip-dev \
-    libicu-dev \
- && docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl intl gd \
- && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install system dependencies
+RUN apk add --no-cache \
+    git curl libpng-dev libxml2-dev zip unzip \
+    oniguruma-dev libzip-dev
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Install PHP extensions
+RUN docker-php-ext-install \
+    pdo_mysql mbstring exif pcntl bcmath gd zip opcache
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 WORKDIR /var/www/html
 
-# Copy everything first so artisan exists
+# Copy composer files first (layer cache optimization)
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# Copy application code
 COPY . .
 
-# Install deps
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
-COPY nginx.conf /etc/nginx/sites-available/default
-
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html \
- && chmod -R ug+rwx storage bootstrap/cache
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
 
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+# Run post-install scripts
+RUN composer run-script post-autoload-dump
 
-EXPOSE 80
-CMD ["/start.sh"]
+EXPOSE 9000
+CMD ["php-fpm"]
