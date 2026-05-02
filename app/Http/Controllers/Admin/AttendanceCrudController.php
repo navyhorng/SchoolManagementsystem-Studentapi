@@ -23,7 +23,7 @@ class AttendanceCrudController extends CrudController
         CRUD::setEntityNameStrings('attendance', 'attendances');
         CRUD::allowAccess(['list', 'show', 'create', 'update', 'delete']);
     }
-
+//test commit
     protected function setupListOperation(): void
     {
         CRUD::column('id');
